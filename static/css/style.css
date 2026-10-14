@@ -96,3 +96,30 @@ footer { text-align:center; padding:25px; color:var(--muted); font-size:.86rem; 
   .form-grid { grid-template-columns:1fr; }
   .water-stage { min-height:360px; }
 }
+.indicator-analysis,
+.not-assessed {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.indicator-analysis h3,
+.not-assessed h3 {
+  margin-bottom: 0.75rem;
+}
+
+.indicator-analysis ul,
+.not-assessed ul {
+  padding-left: 1.25rem;
+}
+
+.indicator-analysis li,
+.not-assessed li {
+  margin-bottom: 0.75rem;
+}
+
+.indicator-analysis li p,
+.not-assessed li p {
+  margin-top: 0.25rem;
+}

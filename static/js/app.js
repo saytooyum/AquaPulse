@@ -22,7 +22,64 @@ form.addEventListener('submit', async (event) => {
     stage.className = `water-stage ${healthy ? 'healthy' : 'risk'}`;
     caption.textContent = healthy ? 'Water looks Healthy' : 'Water looks At-Risk';
     result.className = `result ${healthy ? 'healthy' : 'risk'}`;
-    result.innerHTML = `<h2>${healthy ? '✓' : '!'} ${data.status}</h2><p><b>${data.healthy_probability}% Healthy confidence</b> · ${data.at_risk_probability}% At-Risk confidence</p><p>${healthy ? 'Continue routine monitoring and share this positive observation.' : 'Re-sample within 24 hours, inspect possible runoff sources, and notify local water managers if this persists.'}</p>`;
+    const analysis = data.indicator_analysis || {};
+const indicators = analysis.screened_indicators || [];
+const notAssessed = analysis.not_assessed || [];
+
+const indicatorSection = indicators.length
+  ? `
+    <div class="indicator-analysis">
+      <h3>Potential stress indicators</h3>
+      <ul>
+        ${indicators.map(item => `
+          <li>
+            <strong>${item.parameter}</strong>: ${item.value}
+            <p>${item.message}</p>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `
+  : `
+    <div class="indicator-analysis">
+      <h3>Potential stress indicators</h3>
+      <p>No indicators were flagged by the configured screening rules.</p>
+    </div>
+  `;
+
+const notAssessedSection = notAssessed.length
+  ? `
+    <div class="not-assessed">
+      <h3>Not assessed by screening rules</h3>
+      <ul>
+        ${notAssessed.map(item => `
+          <li>
+            <strong>${item.parameter}</strong>: ${item.value}
+            <p>${item.reason}</p>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+  `
+  : '';
+
+result.innerHTML = `
+  <h2>${healthy ? '✓' : '!'} ${data.status}</h2>
+
+  <p>
+    <b>${data.healthy_probability}% Healthy probability</b>
+    · ${data.at_risk_probability}% At-Risk probability
+  </p>
+
+  <p>
+    ${healthy
+      ? 'Continue routine monitoring and share this observation.'
+      : 'Consider repeat sampling and investigate potential sources of water-quality stress.'}
+  </p>
+
+  ${indicatorSection}
+  ${notAssessedSection}
+`;
     result.scrollIntoView({behavior: 'smooth', block: 'center'});
   } catch (error) {
     stage.className = 'water-stage risk';

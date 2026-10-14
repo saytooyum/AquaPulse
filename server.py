@@ -40,21 +40,29 @@ def predict():
     except (KeyError, TypeError, ValueError):
         return jsonify(error="Please enter valid numeric values for all five measurements."), 400
 
-    output = predict_water_quality(
-        values["DO"],
-        values["Temperature"],
-        values["pH"],
-        values["Nitrate"],
-        values["Phosphorus"],
+    try:
+        output = predict_water_quality(
+            values["DO"],
+            values["Temperature"],
+            values["pH"],
+            values["Nitrate"],
+            values["Phosphorus"],
     )
+    except ValueError as error:
+        return jsonify(error=str(error)), 400
     predicted_label = 1 if output["prediction"] == "Healthy" else 0
     result = {
         "prediction_time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         **values,
         "predicted_label": predicted_label,
         "status": output["prediction"],
-        "at_risk_probability": round(output["at_risk_probability"] * 100, 1),
-        "healthy_probability": round(output["healthy_probability"] * 100, 1),
+        "at_risk_probability": round(
+        output["at_risk_probability"] * 100, 1
+        ),
+        "healthy_probability": round(
+        output["healthy_probability"] * 100, 1
+        ),
+        "indicator_analysis": output["indicator_analysis"],
     }
 
     record = pd.DataFrame([{
